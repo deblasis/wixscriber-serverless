@@ -19,12 +19,12 @@ const blobServiceClient = new BlobServiceClient(storageAddress, credential);
 const containerClient = blobServiceClient.getContainerClient(blobContainerName);
 
   module.exports = {
-    uploadBlob = async function(bucket, filename, data) {
+    uploadBlob: async function(bucket, filename, data) {
         const blobName = `${bucket}/${filename}`;
         const blockBlobClient = containerClient.getBlockBlobClient(blobName);
         return await blockBlobClient.upload(data, data.length);
     },
-    updateJobProgress = async function (userId, fileHash, props) {
+    updateJobProgress: async function (userId, fileHash, props) {
         const entity = {
             partitionKey: userId,
             rowKey: fileHash,
@@ -32,8 +32,7 @@ const containerClient = blobServiceClient.getContainerClient(blobContainerName);
             };
             return await jobsTableClient.upsertEntity(entity);
     },
-    getJobProgress = async function (userId, fileHash) {
+    getJobProgress: async function (userId, fileHash) {
         return await jobsTableClient.getEntity(userId, fileHash);
     }
-
   }
