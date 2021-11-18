@@ -42,10 +42,12 @@ module.exports = async function (context, req) {
         responseType: "stream"
     }).then(function (response) {
         response.data.pipe(file);
+        context.log(`file downloaded as ${tmpFile.name}`);
         return finished(file);
     });
 
     const hash = hashFile(tmpFile.name);
+    context.log(`hash ${hash}`);
 
     const job = {
         partitionKey: userId,
@@ -55,7 +57,6 @@ module.exports = async function (context, req) {
         cleanAudioFile: "",
         transcription: ""
     }
-    context.log(`file downloaded as ${tmpFile.name}`);
 
     await uploadBlob("raw", `${userId}-_-${hash}`, file);
     context.log(`file stored in blobstorage as raw/${userId}-_-${hash}`);
