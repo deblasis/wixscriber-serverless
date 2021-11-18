@@ -26,6 +26,8 @@ module.exports = async function (context, req) {
 
 
     const { fileUrl, userId } = req.body;
+    context.log(`req: fileUrl ${fileUrl} userId: ${userId}`);
+
     const finished = promisify(stream.finished);
 
     const tmpFile = tmp.fileSync();
