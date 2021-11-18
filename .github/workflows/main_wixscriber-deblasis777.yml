@@ -22,15 +22,15 @@ jobs:
     - name: Log in to registry
       uses: docker/login-action@v1
       with:
-        registry: https://mcr.microsoft.com/
-        username: ${{ secrets.AzureAppService_ContainerUsername_f90d01b879f64b8bb21421304789ae39 }}
-        password: ${{ secrets.AzureAppService_ContainerPassword_33b32091a7404053b8701c9c07d907ba }}
+        registry: https://deblasis.azurecr.io/
+        username: ${{ secrets.AzureAppService_ContainerUsername_b340adffdf53408aaec52a0847731630 }}
+        password: ${{ secrets.AzureAppService_ContainerPassword_3c538c0a9da74a97b1ef46f821f68c5a }}
 
     - name: Build and push container image to registry
       uses: docker/build-push-action@v2
       with:
         push: true
-        tags: mcr.microsoft.com/${{ secrets.AzureAppService_ContainerUsername_f90d01b879f64b8bb21421304789ae39 }}/wixscriber-serverless:${{ github.sha }}
+        tags: deblasis.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_b340adffdf53408aaec52a0847731630 }}/deblasis/wixscriber-serverless:${{ github.sha }}
         file: ./Dockerfile
 
   deploy:
@@ -47,5 +47,5 @@ jobs:
       with:
         app-name: 'wixscriber-deblasis777'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_37877a378bfb459082aae08eca89faaf }}
-        images: 'mcr.microsoft.com/${{ secrets.AzureAppService_ContainerUsername_f90d01b879f64b8bb21421304789ae39 }}/wixscriber-serverless:${{ github.sha }}'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_6d431137174f49b5911e838e97ee37dc }}
+        images: 'deblasis.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_b340adffdf53408aaec52a0847731630 }}/deblasis/wixscriber-serverless:${{ github.sha }}'
