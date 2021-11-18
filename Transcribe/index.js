@@ -49,14 +49,14 @@ module.exports = async function (context, req) {
         partitionKey: userId,
         rowKey: hash,
         fileName: fileUrl,
-        rawFile: `raw/${userId}-|-${hash}`,
+        rawFile: `raw/${userId}-_-${hash}`,
         cleanAudioFile: "",
         transcription: ""
     }
     context.log(`file downloaded as ${tmpFile.name}`);
 
-    await uploadBlob("raw", `${userId}-|-${hash}`, file);
-    context.log(`file stored in blobstorage as raw/${userId}-|-${hash}`);
+    await uploadBlob("raw", `${userId}-_-${hash}`, file);
+    context.log(`file stored in blobstorage as raw/${userId}-_-${hash}`);
 
     context.res = {
         body: JSON.stringify(job)

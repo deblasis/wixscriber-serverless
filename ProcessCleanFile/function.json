@@ -5,7 +5,7 @@
       "type": "blobTrigger",
       "direction": "in",
       "dataType": "binary",
-      "path": "raw/{userId}-|-{hash}",
+      "path": "raw/{userId}-_-{hash}",
       "connection": ""
     }
   ]

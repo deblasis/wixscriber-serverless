@@ -5,7 +5,7 @@
       "type": "blobTrigger",
       "direction": "in",
       "dataType": "binary",
-      "path": "cleanaudio/{userId}-|-{hash}",
+      "path": "cleanaudio/{userId}-_-{hash}",
       "connection": ""
     }
   ]

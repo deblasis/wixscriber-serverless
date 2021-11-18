@@ -51,13 +51,13 @@ module.exports = async function (context, rawBlob, userId, hash) {
     await ffmpegPromise;
 
     await updateJobProgress(userId, hash, {
-        cleanAudioFile: `cleanaudio/${userId}-|-${hash}`
+        cleanAudioFile: `cleanaudio/${userId}-_-${hash}`
     });
 
     const cleanFile = await fs.readFileSync(`${tmpFile.name}.wav`);
-    await uploadBlob("cleanaudio", `${userId}-|-${hash}`, cleanFile);
+    await uploadBlob("cleanaudio", `${userId}-_-${hash}`, cleanFile);
 
-    context.log(`file stored in blobstorage as cleanaudio/${userId}-|-${hash}`);
+    context.log(`file stored in blobstorage as cleanaudio/${userId}-_-${hash}`);
 
     tmpFile.removeCallback();
 };
