@@ -1,0 +1,12 @@
+{
+  "bindings": [
+    {
+      "name": "rawBlob",
+      "type": "blobTrigger",
+      "direction": "in",
+      "dataType": "binary",
+      "path": "raw/{userId}-|-{hash}",
+      "connection": ""
+    }
+  ]
+}

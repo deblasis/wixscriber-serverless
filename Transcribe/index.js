@@ -4,14 +4,13 @@ const tmp = require('tmp');
 const axios = require('axios');
 const stream = require('stream');
 const { promisify } = require('util');
-const { exec } = require('child_process');
+
+const {uploadBlob} = require('../common/storage');
 
 
-const trimLenght = process.env.AudioTrimLenght || 30;
 const code = process.env.AuthCode;
 
 
-const transcriber = require('./transcriber');
 
 module.exports = async function (context, req) {
     context.log('JavaScript HTTP trigger function processed a request.');
@@ -26,7 +25,7 @@ module.exports = async function (context, req) {
     }
 
 
-    const { fileUrl } = req.body;
+    const { fileUrl, userId } = req.body;
     const finished = promisify(stream.finished);
 
     const tmpFile = tmp.fileSync();
@@ -44,55 +43,37 @@ module.exports = async function (context, req) {
         return finished(file);
     });
 
+    const hash = hashFile(tmpFile.name);
+
+    const job = {
+        partitionKey: userId,
+        rowKey: hash,
+        fileName: fileUrl,
+        rawFile: `raw/${userId}-|-${hash}`,
+        cleanAudioFile: "",
+        transcription: ""
+    }
     context.log(`file downloaded as ${tmpFile.name}`);
 
-    context.log(`trimming it to ${trimLenght}s, applying simple denoising and extracting audio only`);
-    // 1 channel 16000kHz 16bit
-    let ffmpeg = exec(`ffmpeg -i ${tmpFile.name} -t ${trimLenght} -ac 1 -ar 16000 -acodec pcm_s16le -af "highpass=f=200, lowpass=f=3000" ${tmpFile.name}.wav`, (error, stdout, stderr) => {
-        if (error) {
-            context.log(`error: ${error.message}`);
-            return;
-        }
-        if (stderr) {
-            context.log(`stderr: ${stderr}`);
-            return;
-        }
-        context.log(`stdout: ${stdout}`);
-    });
-
-    let ffmpegPromise = promisifyChildProcess(ffmpeg).then(function (result) {
-        context.log('ffmpeg process complete: ' + result);
-    }, function (err) {
-        context.log('ffmpeg process failed: ' + err);
-    });
-
-    ffmpeg.stdout.on('data', function (data) {
-        context.log('stdout: ' + data);
-    });
-    ffmpeg.stderr.on('data', function (data) {
-        context.log('stderr: ' + data);
-    });
-    ffmpeg.on('close', function (code) {
-        context.log('closing code: ' + code);
-    });
-
-    await ffmpegPromise;
-
-    const transcribed = await transcriber(context, `${tmpFile.name}.wav`);
-
-    console.log("transcribed", transcribed);
+    await uploadBlob("raw", `${userId}-|-${hash}`, file);
+    context.log(`file stored in blobstorage as raw/${userId}-|-${hash}`);
 
     context.res = {
-        // status: 200, /* Defaults to 200 */
-        body: transcribed
-    };
+        body: JSON.stringify(job)
+    }
 
+    context.bindings.jobsTable = [];
+    context.bindings.jobsTable.push(job);
+
+
+    tmpFile.removeCallback();
 }
 
 
-function promisifyChildProcess(child) {
-    return new Promise(function (resolve, reject) {
-        child.addListener("error", reject);
-        child.addListener("exit", resolve);
-    });
-}
+
+function hashFile(fileName) {
+    const fileBuffer = fs.readFileSync(fileName);
+    const hashSum = crypto.createHash('sha1');
+    hashSum.update(fileBuffer);
+    return hashSum.digest('hex');
+  }

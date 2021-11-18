@@ -1,0 +1,12 @@
+{
+  "bindings": [
+    {
+      "name": "cleanAudioBlob",
+      "type": "blobTrigger",
+      "direction": "in",
+      "dataType": "binary",
+      "path": "cleanAudio/{userId}-|-{hash}",
+      "connection": ""
+    }
+  ]
+}
