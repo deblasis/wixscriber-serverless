@@ -30,7 +30,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         push: true
-        tags: mcr.microsoft.com/${{ secrets.AzureAppService_ContainerUsername_02980422110a4c56af2adb6b11affcad }}/deblasis/wixscriber-serverless:${{ github.sha }}
+        tags: mcr.microsoft.com/${{ secrets.AzureAppService_ContainerUsername_02980422110a4c56af2adb6b11affcad }}/wixscriber-serverless:${{ github.sha }}
         file: ./Dockerfile
 
   deploy:
@@ -48,4 +48,4 @@ jobs:
         app-name: 'wixscriber-deblasis777'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_e1ba1e9d15e34acd9c2b0b08451f1761 }}
-        images: 'mcr.microsoft.com/${{ secrets.AzureAppService_ContainerUsername_02980422110a4c56af2adb6b11affcad }}/deblasis/wixscriber-serverless:${{ github.sha }}'
+        images: 'mcr.microsoft.com/${{ secrets.AzureAppService_ContainerUsername_02980422110a4c56af2adb6b11affcad }}/wixscriber-serverless:${{ github.sha }}'
