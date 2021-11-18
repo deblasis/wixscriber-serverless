@@ -34,13 +34,13 @@ module.exports = async function (context, req) {
     const file = fs.createWriteStream(tmpFile.name);
 
 
+    context.log(`file downloading from ${fileUrl}`);
     await axios({
         method: "get",
         url: fileUrl,
         responseType: "stream"
     }).then(function (response) {
         response.data.pipe(file);
-        context.log('file downloading');
         return finished(file);
     });
 
