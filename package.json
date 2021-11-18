@@ -1,0 +1,14 @@
+{
+  "name": "",
+  "version": "",
+  "description": "",
+  "scripts": {
+    "test": "echo \"No tests yet...\""
+  },
+  "author": "",
+  "dependencies": {
+    "axios": "^0.24.0",
+    "microsoft-cognitiveservices-speech-sdk": "^1.19.0",
+    "tmp": "^0.2.1"
+  }
+}

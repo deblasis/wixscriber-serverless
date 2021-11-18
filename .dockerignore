@@ -1,0 +1,6 @@
+local.settings.json
+*.http
+
+
+*.wav
+*.mp3
