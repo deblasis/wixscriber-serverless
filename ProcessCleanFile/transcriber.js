@@ -1,6 +1,5 @@
 const sdk = require("microsoft-cognitiveservices-speech-sdk");
 const fs = require("fs");
-const crypto = require("crypto");
 
 const subscriptionKey = process.env.CognitiveServicesSubscriptionKey;
 const serviceRegion = process.env.CognitiveServicesAppRegion || "eastus";
@@ -24,13 +23,7 @@ module.exports = async function (context, filename) {
     context.log(`Transcribing from ${filename}`);
 
 
-    const hash = hashFile(filename);
-
-    context.ret = {
-
-    }
-
-
+    // const hash = hashFile(filename);
 
 
 

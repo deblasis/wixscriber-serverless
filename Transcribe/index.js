@@ -4,6 +4,8 @@ const tmp = require('tmp');
 const axios = require('axios');
 const stream = require('stream');
 const { promisify } = require('util');
+const crypto = require("crypto");
+
 
 const {uploadBlob} = require('../common/storage');
 
