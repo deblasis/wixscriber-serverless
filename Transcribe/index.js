@@ -72,7 +72,7 @@ module.exports = async function (context, req) {
     context.bindings.jobsTable = [];
     context.bindings.jobsTable.push(job);
 
-
+    context.done();
     try {
         tmpFile.removeCallback();
     } catch (err) {
