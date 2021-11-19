@@ -7,20 +7,24 @@ const jobsTableClient = TableClient.fromConnectionString(connStr, "Jobs");
 const memoTableClient = TableClient.fromConnectionString(connStr, "Memo");
 const blobServiceClient = BlobServiceClient.fromConnectionString(connStr);
 
+const _getMemoIfExists = async function (hash, property) {
+  let ret;
+  try {
+    ret = await memoTableClient.getEntity(hash, property);
+  } finally {
+    return ret;
+  }
+};
+
+
+
 module.exports = {
   uploadBlob: async function (bucket, filename, file) {
     const containerClient = blobServiceClient.getContainerClient(bucket);
     const blockBlobClient = containerClient.getBlockBlobClient(filename);
     return await blockBlobClient.uploadFile(file);
   },
-  getMemoIfExists: async function (hash, property) {
-    let ret;
-    try {
-      ret = await memoTableClient.getEntity(hash, property);
-    } finally {
-      return ret;
-    }
-  },
+  getMemoIfExists: _getMemoIfExists,
   setMemo: async function (hash, property, value) {
     const entity = {
       partitionKey: hash,
@@ -29,18 +33,28 @@ module.exports = {
     };
     return await memoTableClient.upsertEntity(entity);
   },
-  updateJobProgress: async function (userId, fileHash, props) {
+  updateJobProgress: async function (userId, hash, props) {
     const entity = {
       partitionKey: userId,
-      rowKey: fileHash,
+      rowKey: hash,
       ...props,
     };
     return await jobsTableClient.upsertEntity(entity);
   },
-  getJobProgress: async function (userId, fileHash) {
+  getJobProgress: async function (userId, hash) {
     let ret;
     try {
-      ret = await jobsTableClient.getEntity(userId, fileHash);
+      const memo = await _getMemoIfExists(hash, "transcription");
+      if (memo && memo.val) {
+        ret = {
+          userid: userId,
+          hash: hash,
+          transcription: memo.val,
+          isMemo: true,
+        };
+      } else {
+        ret = await jobsTableClient.getEntity(userId, hash);
+      }
     } finally {
       return ret;
     }
