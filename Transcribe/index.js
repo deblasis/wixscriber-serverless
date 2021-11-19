@@ -59,10 +59,12 @@ module.exports = async function (context, req) {
         cleanAudioFile: "",
         transcription: ""
     }
-
+    try {
     await uploadBlob("raw", `${userId}-_-${hash}`, file);
     context.log(`file stored in blobstorage as raw/${userId}-_-${hash}`);
-
+    } catch (err) {
+        context.log(`error`,err);
+    }
     context.res = {
         body: JSON.stringify(job)
     }
