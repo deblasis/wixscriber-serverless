@@ -52,25 +52,25 @@ module.exports = async function (context, req) {
     context.log(`hash ${hash}`);
 
     const job = {
-        partitionKey: userId,
-        rowKey: hash,
         fileName: fileUrl,
         rawFile: `raw/${userId}-_-${hash}`,
         cleanAudioFile: "",
         transcription: ""
     }
     try {
-    await uploadBlob("raw", `${userId}-_-${hash}`, tmpFile.name);
-    context.log(`file stored in blobstorage as raw/${userId}-_-${hash}`);
+        await uploadBlob("raw", `${userId}-_-${hash}`, tmpFile.name);
+        context.log(`file stored in blobstorage as raw/${userId}-_-${hash}`);
     } catch (err) {
         context.log(`error`,err);
     }
+
     context.res = {
         body: JSON.stringify(job)
     }
 
-    context.bindings.jobsTable = [];
-    context.bindings.jobsTable.push(job);
+    await updateJobProgress(userId, hash, {
+        ...job
+    });
 
     context.done();
     try {

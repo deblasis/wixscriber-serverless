@@ -13,13 +13,6 @@
       "type": "http",
       "direction": "out",
       "name": "res"
-    },
-    {
-      "tableName": "Jobs",
-      "connection": "",
-      "name": "jobsTable",
-      "type": "table",
-      "direction": "out"
     }
   ]
 }

@@ -2,11 +2,10 @@ const { TableClient } = require("@azure/data-tables");
 const { BlobServiceClient } = require("@azure/storage-blob");
 
 const connStr = process.env.StorageConnectionString;
-const jobsTableName = "Jobs";
 
 const jobsTableClient = TableClient.fromConnectionString(
   connStr,
-  jobsTableName
+  "Jobs"
 );
 const blobServiceClient = BlobServiceClient.fromConnectionString(connStr);
 
