@@ -60,7 +60,7 @@ module.exports = async function (context, req) {
         transcription: ""
     }
     try {
-    await uploadBlob("raw", `${userId}-_-${hash}`, file);
+    await uploadBlob("raw", `${userId}-_-${hash}`, tmpFile.name);
     context.log(`file stored in blobstorage as raw/${userId}-_-${hash}`);
     } catch (err) {
         context.log(`error`,err);
@@ -73,7 +73,11 @@ module.exports = async function (context, req) {
     context.bindings.jobsTable.push(job);
 
 
-    tmpFile.removeCallback();
+    try {
+        tmpFile.removeCallback();
+    } catch (err) {
+        context.log(`error`,err);
+    }
 }
 
 

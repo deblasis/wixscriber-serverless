@@ -54,8 +54,7 @@ module.exports = async function (context, rawBlob, userId, hash) {
         cleanAudioFile: `cleanaudio/${userId}-_-${hash}`
     });
 
-    const cleanFile = await fs.readFileSync(`${tmpFile.name}.wav`);
-    await uploadBlob("cleanaudio", `${userId}-_-${hash}`, cleanFile);
+    await uploadBlob("cleanaudio", `${userId}-_-${hash}`, `${tmpFile.name}.wav`);
 
     context.log(`file stored in blobstorage as cleanaudio/${userId}-_-${hash}`);
 

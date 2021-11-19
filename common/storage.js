@@ -19,10 +19,10 @@ const blobServiceClient = new BlobServiceClient(storageAddress, credential);
 const containerClient = blobServiceClient.getContainerClient(blobContainerName);
 
   module.exports = {
-    uploadBlob: async function(bucket, filename, data) {
+    uploadBlob: async function(bucket, filename, file) {
         const blobName = `${bucket}/${filename}`;
         const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-        return await blockBlobClient.uploadStream(data, data.length);
+        return await blockBlobClient.uploadFile(file);
     },
     updateJobProgress: async function (userId, fileHash, props) {
         const entity = {
