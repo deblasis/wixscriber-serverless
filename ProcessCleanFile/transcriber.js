@@ -56,7 +56,7 @@ module.exports = async function (context, filename, userId, hash) {
       // The event recognizing signals that an intermediate recognition result is received.
       // You will receive one or more recognizing events as a speech phrase is recognized, with each containing
       // more recognized speech. The event will contain the text for the recognition since the last phrase was recognized.
-      reco.recognizing = function (s, e) {
+      reco.recognizing = async function (s, e) {
         var str =
           "(recognizing) Reason: " +
           sdk.ResultReason[e.result.reason] +
