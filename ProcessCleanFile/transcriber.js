@@ -1,11 +1,15 @@
 const sdk = require("microsoft-cognitiveservices-speech-sdk");
 const fs = require("fs");
 
+const {
+  updateJobProgress,
+} = require("../common/storage");
+
 const subscriptionKey = process.env.CognitiveServicesSubscriptionKey;
 const serviceRegion = process.env.CognitiveServicesAppRegion || "eastus";
 const language = process.env.CognitiveServicesLanguage || "en-US";
 
-module.exports = async function (context, filename) {
+module.exports = async function (context, filename, userId, hash) {
   return new Promise((resolve, reject) => {
     // create the push stream we need for the speech sdk.
     var pushStream = sdk.AudioInputStream.createPushStream();
@@ -59,6 +63,11 @@ module.exports = async function (context, filename) {
           " Text: " +
           e.result.text;
         context.log(str);
+
+        await updateJobProgress(userId, hash, {
+          progress: `recognizing: "${e.result.text}..."`,
+        });
+
       };
 
       // The event recognized signals that a final recognition result is received.
@@ -127,5 +136,11 @@ function parseTime(nano) {
     minute = minute.toString();
     second = second.toString();
     mil = mil.toString().slice(0, 3)
-    return `${hour}:${minute}:${second}.${mil}`
+    return `${pad(hour,2)}:${pad(minute,2)}:${pad(second,2)}.${pad(mil,3)}`
+}
+
+function pad(num, size) {
+  num = num.toString();
+  while (num.length < size) num = "0" + num;
+  return num;
 }

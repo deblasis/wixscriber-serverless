@@ -24,7 +24,7 @@ module.exports = async function (context, cleanAudioBlob) {
   const file = fs.createWriteStream(tmpFile.name);
   file.write(cleanAudioBlob);
 
-  const transcription = await transcriber(context, `${tmpFile.name}`);
+  const transcription = await transcriber(context, `${tmpFile.name}`, userId, hash);
   context.log("transcription", transcription);
 
   await updateJobProgress(userId, hash, {transcription});
