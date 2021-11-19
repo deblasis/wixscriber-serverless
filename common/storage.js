@@ -22,7 +22,7 @@ const containerClient = blobServiceClient.getContainerClient(blobContainerName);
     uploadBlob: async function(bucket, filename, data) {
         const blobName = `${bucket}/${filename}`;
         const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-        return await blockBlobClient.upload(data, data.length);
+        return await blockBlobClient.uploadStream(data, data.length);
     },
     updateJobProgress: async function (userId, fileHash, props) {
         const entity = {
