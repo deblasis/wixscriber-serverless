@@ -1,11 +1,11 @@
 {
   "bindings": [
     {
-      "name": "rawBlob",
+      "name": "cleanAudioBlob",
       "type": "blobTrigger",
       "direction": "in",
       "dataType": "binary",
-      "path": "raw/{userId}-_-{hash}",
+      "path": "cleanaudio/{userId}-_-{hash}",
       "connection": ""
     }
   ]
