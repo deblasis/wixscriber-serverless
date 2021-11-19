@@ -44,7 +44,7 @@ module.exports = async function (context, req) {
   const hash = hashFile(tmpFile.name);
   context.log(`hash ${hash}`);
 
-  const job = {
+  const jobDetails = {
     fileName: fileUrl,
     rawFile: `raw/${userId}-_-${hash}`,
     cleanAudioFile: "",
@@ -57,15 +57,14 @@ module.exports = async function (context, req) {
     context.log(`error`, err);
   }
 
+
+  await updateJobProgress(userId, hash, jobDetails);
+//   jobDetails.userId = userId;
+//   jobDetails.hash = hash;
   context.res = {
-    body: JSON.stringify(job),
+    body: JSON.stringify(({...jobDetails,userId,hash})),
   };
 
-  await updateJobProgress(userId, hash, {
-    ...job,
-  });
-
-  context.done();
   try {
     tmpFile.removeCallback();
   } catch (err) {

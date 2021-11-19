@@ -9,14 +9,18 @@ const {updateJobProgress, uploadBlob} = require("../common/storage");
 const trimLenght = process.env.AudioTrimLenght || 30;
 
 
-module.exports = async function (context, rawBlob, userId, hash) {
-    context.log("JavaScript blob trigger function processed blob \n Blob:", context.bindingData.blobTrigger, "\n Blob Size:", rawBlob.length, "Bytes");
+module.exports = async function (context, rawAudioBlob) {
+    context.log("JavaScript blob trigger function processed blob \n Blob:", context.bindingData.blobTrigger, "\n Blob Size:", rawAudioBlob.length, "Bytes");
 
-
+    const { userId, hash } = context.bindingData;
+    if (!userId || !hash) {
+        context.log("invalid inputs")
+        return;
+    }
 
     const tmpFile = tmp.fileSync();
     const file = fs.createWriteStream(tmpFile.name);
-    file.write(rawBlob);
+    file.write(rawAudioBlob);
 
     context.log(`trimming it to ${trimLenght}s, applying simple denoising and extracting audio only`);
     // 1 channel 16000kHz 16bit
