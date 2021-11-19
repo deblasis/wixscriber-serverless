@@ -2,7 +2,7 @@ const fs = require("fs");
 const tmp = require("tmp");
 const transcriber = require("./transcriber");
 
-const { updateJobProgress } = require("../common/storage");
+const { updateJobProgress, setMemo } = require("../common/storage");
 
 module.exports = async function (context, cleanAudioBlob) {
   context.log(
@@ -27,9 +27,9 @@ module.exports = async function (context, cleanAudioBlob) {
   const transcription = await transcriber(context, `${tmpFile.name}`);
   context.log("transcription", transcription);
 
-  await updateJobProgress(userId, hash, {
-    transcription,
-  });
+  await updateJobProgress(userId, hash, {transcription});
+
+  await setMemo(hash, "transcription", transcription);
 
   tmpFile.removeCallback();
 };

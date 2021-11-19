@@ -5,7 +5,12 @@ const stream = require("stream");
 const { promisify } = require("util");
 const crypto = require("crypto");
 
-const { uploadBlob, updateJobProgress } = require("../common/storage");
+const {
+  uploadBlob,
+  updateJobProgress,
+  getJobProgress,
+  getMemoIfExists,
+} = require("../common/storage");
 
 const code = process.env.AuthCode;
 
@@ -22,12 +27,12 @@ module.exports = async function (context, req) {
   }
 
   const { fileUrl, userId } = req.body;
+
   context.log(`req: fileUrl ${fileUrl} userId: ${userId}`);
 
   const finished = promisify(stream.finished);
 
   const tmpFile = tmp.fileSync();
-
   const file = fs.createWriteStream(tmpFile.name);
 
   context.log(`file downloading from ${fileUrl}`);
@@ -44,6 +49,35 @@ module.exports = async function (context, req) {
   const hash = hashFile(tmpFile.name);
   context.log(`hash ${hash}`);
 
+
+  let memo = await getMemoIfExists(hash, "transcription");
+  if (memo && memo.val) {
+    context.res = {
+        body: JSON.stringify({
+          userid: userId,
+          hash: hash,
+          transcription: memo.val,
+          isMemo: true
+        }),
+      };
+      return;
+  }
+  const progress = await getJobProgress(userId, hash);
+  if (progress && progress.rawFile) {
+    context.log("already done");
+
+    context.res = {
+      body: JSON.stringify({
+        userid: progress.userId,
+        hash: progress.hash,
+        rawFile: progress.rawFile,
+        cleanAudioFile: progress.cleanAudioFile,
+        transcription: progress.transcription,
+      }),
+    };
+    return;
+  }
+
   const jobDetails = {
     fileName: fileUrl,
     rawFile: `raw/${userId}-_-${hash}`,
@@ -57,19 +91,13 @@ module.exports = async function (context, req) {
     context.log(`error`, err);
   }
 
-
   await updateJobProgress(userId, hash, jobDetails);
-//   jobDetails.userId = userId;
-//   jobDetails.hash = hash;
+
   context.res = {
-    body: JSON.stringify(({...jobDetails,userId,hash})),
+    body: JSON.stringify({ ...jobDetails, userId, hash }),
   };
 
-  try {
-    tmpFile.removeCallback();
-  } catch (err) {
-    context.log(`error`, err);
-  }
+  tmpFile.removeCallback();
 };
 
 function hashFile(fileName) {
