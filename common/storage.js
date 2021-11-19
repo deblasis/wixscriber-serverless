@@ -8,12 +8,12 @@ const account = process.env.StorageAccountName;
 const accountKey = process.env.StorageKey;
 
 const jobsTableName = "Jobs";
-const storageAddress = `https://${account}.table.core.windows.net`;
+const storageAddress = (type) => `https://${account}.${type}.core.windows.net`;
 
 const credential = new AzureNamedKeyCredential(account, accountKey);
 
-const blobServiceClient = new BlobServiceClient(storageAddress, credential);
-const jobsTableClient = new TableClient(storageAddress, jobsTableName, credential);
+const blobServiceClient = new BlobServiceClient(storageAddress('blob'), credential);
+const jobsTableClient = new TableClient(storageAddress('table'), jobsTableName, credential);
 
 
 module.exports = {
