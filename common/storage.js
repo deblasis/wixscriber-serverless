@@ -13,10 +13,7 @@ const storageAddress = (type) => `https://${account}.${type}.core.windows.net`;
 const ankCred = new AzureNamedKeyCredential(account, accountKey);
 const sskCred = new StorageSharedKeyCredential(account, accountKey);
 
-const blobServiceClient = new BlobServiceClient(
-  storageAddress("blob"),
-  ankCred
-);
+const blobServiceClient = BlobServiceClient.fromConnectionString("DefaultEndpointsProtocol=https;AccountName=storageaccountwixha9bf9;AccountKey=hKyRml0VvjDKQKUDYWsf53ZYsl+OgHdWVIXLooDfr08mDJuvaERrl/I7ruFot8m3cEbZegkCjCIkBMAxaaGT6Q==;EndpointSuffix=core.windows.net");
 const jobsTableClient = new TableClient(
   storageAddress("table"),
   jobsTableName,
