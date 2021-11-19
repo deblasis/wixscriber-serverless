@@ -7,21 +7,19 @@ const { BlobServiceClient } = require('@azure/storage-blob');
 const account = process.env.StorageAccountName;
 const accountKey = process.env.StorageKey;
 
-const blobContainerName = "wixscriber";
 const jobsTableName = "Jobs";
 const storageAddress = `https://${account}.table.core.windows.net`;
 
 const credential = new AzureNamedKeyCredential(account, accountKey);
 
+const blobServiceClient = new BlobServiceClient(storageAddress, credential);
 const jobsTableClient = new TableClient(storageAddress, jobsTableName, credential);
 
-const blobServiceClient = new BlobServiceClient(storageAddress, credential);
-const containerClient = blobServiceClient.getContainerClient(blobContainerName);
 
-  module.exports = {
-    uploadBlob: async function(bucket, filename, file) {
-        const blobName = `${bucket}/${filename}`;
-        const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+module.exports = {
+  uploadBlob: async function(bucket, filename, file) {
+        const containerClient = blobServiceClient.getContainerClient(bucket);
+        const blockBlobClient = containerClient.getBlockBlobClient(filename);
         return await blockBlobClient.uploadFile(file);
     },
     updateJobProgress: async function (userId, fileHash, props) {
