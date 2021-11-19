@@ -22,11 +22,6 @@ module.exports = async function (context, filename) {
     // we are done with the setup
     context.log(`Transcribing from ${filename}`);
 
-
-    // const hash = hashFile(filename);
-
-
-
     let output = `WEBVTT\r\n\r\n`;
       // now create the audio-config pointing to our stream and
       // the speech config specifying the language.

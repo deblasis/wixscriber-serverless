@@ -3,7 +3,7 @@ const tmp = require("tmp");
 const axios = require("axios");
 const stream = require("stream");
 const { promisify } = require("util");
-const crypto = require("crypto");
+// const crypto = require("crypto");
 
 const {
   uploadBlob,
@@ -26,7 +26,20 @@ module.exports = async function (context, req) {
     context.done();
   }
 
-  const { fileUrl, userId } = req.body;
+  const { fileUrl, userId, hash } = req.body;
+
+  let memo = await getMemoIfExists(hash, "transcription");
+  if (memo && memo.val) {
+    context.res = {
+      body: JSON.stringify({
+        userid: userId,
+        hash: hash,
+        transcription: memo.val,
+        isMemo: true,
+      }),
+    };
+    return;
+  }
 
   context.log(`req: fileUrl ${fileUrl} userId: ${userId}`);
 
@@ -46,22 +59,9 @@ module.exports = async function (context, req) {
     return finished(file);
   });
 
-  const hash = hashFile(tmpFile.name);
-  context.log(`hash ${hash}`);
+//   const hash = hashFile(tmpFile.name);
+//   context.log(`hash ${hash}`);
 
-
-  let memo = await getMemoIfExists(hash, "transcription");
-  if (memo && memo.val) {
-    context.res = {
-        body: JSON.stringify({
-          userid: userId,
-          hash: hash,
-          transcription: memo.val,
-          isMemo: true
-        }),
-      };
-      return;
-  }
   const progress = await getJobProgress(userId, hash);
   if (progress && progress.rawFile) {
     context.log("already done");
@@ -100,9 +100,9 @@ module.exports = async function (context, req) {
   tmpFile.removeCallback();
 };
 
-function hashFile(fileName) {
-  const fileBuffer = fs.readFileSync(fileName);
-  const hashSum = crypto.createHash("sha1");
-  hashSum.update(fileBuffer);
-  return hashSum.digest("hex");
-}
+// function hashFile(fileName) {
+//   const fileBuffer = fs.readFileSync(fileName);
+//   const hashSum = crypto.createHash("md5");
+//   hashSum.update(fileBuffer);
+//   return hashSum.digest("hex");
+// }
